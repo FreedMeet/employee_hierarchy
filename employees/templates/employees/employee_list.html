@@ -1,0 +1,207 @@
+{% extends 'employees/base.html' %} {% block content %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>
+        <a href="#" class="sort-link asc" data-sort="full_name">Full Name</a>
+      </th>
+      <th>
+        <a href="#" class="sort-link asc" data-sort="position">Position</a>
+      </th>
+      <th>
+        <a href="#" class="sort-link asc" data-sort="hire_date">Hire Date</a>
+      </th>
+      <th>
+        <a href="#" class="sort-link asc" data-sort="email">Email</a>
+      </th>
+      <th>
+        <a href="#" class="sort-link asc" data-sort="supervisor__full_name"
+          >Supervisor</a
+        >
+      </th>
+    </tr>
+    <tr>
+      <form method="post" id="employee-search-form">
+        {% csrf_token %}
+        <th>
+          <input
+            type="text"
+            name="search_full_name"
+            class="form-control search-input"
+            data-id="full_name"
+            value="{{ search_full_name }}"
+            placeholder="Search by Full Name"
+          />
+        </th>
+        <th>
+          <input
+            type="text"
+            name="search_position"
+            class="form-control search-input"
+            data-id="position"
+            value="{{ search_position }}"
+            placeholder="Search by Position"
+          />
+        </th>
+        <th>
+          <input
+            type="text"
+            name="search_hire_date"
+            class="form-control search-input"
+            data-id="hire_date"
+            value="{{ search_hire_date }}"
+            placeholder="Search by Hire Date"
+          />
+        </th>
+        <th>
+          <input
+            type="text"
+            name="search_email"
+            class="form-control search-input"
+            data-id="email"
+            value="{{ search_email }}"
+            placeholder="Search by Email"
+          />
+        </th>
+        <th>
+          <input
+            type="text"
+            name="search_supervisor__full_name"
+            class="form-control search-input"
+            data-id="supervisor__full_name"
+            value="{{ search_supervisor__full_name }}"
+            placeholder="Search by Supervisor"
+          />
+        </th>
+      </form>
+    </tr>
+  </thead>
+  {% include 'employees/search_result.html' %}
+</table>
+
+<div class="d-flex justify-content-center mt-4 mb-4">
+  <button class="btn btn-primary w-50" id="load-more-button">Load More</button>
+</div>
+
+{% endblock content %} {% block scripts %}
+<script>
+  $(document).ready(function () {
+    $(".sort-link").on("click", function (e) {
+      e.preventDefault();
+      let sortField = $(this).data("sort");
+      let currentSort = $(this).hasClass("asc") ? "desc" : "asc";
+
+      $.ajax({
+        url: "/sort-employees/",
+        type: "GET",
+        data: {
+          sorted_field: sortField,
+          sort: currentSort,
+          page: parseInt($("#load-more-button").data("next-page")) - 1,
+          search_full_name: $("input[name='search_full_name']").val(),
+          search_position: $("input[name='search_position']").val(),
+          search_hire_date: $("input[name='search_hire_date']").val(),
+          search_email: $("input[name='search_email']").val(),
+          search_supervisor__full_name: $(
+            "input[name='search_supervisor__full_name']"
+          ).val(),
+        },
+        success: function (response) {
+          $("tbody").html(response);
+        },
+        error: function (xhr, status, error) {
+          console.error(error);
+        },
+      });
+
+      // Удаление классов сортировки у всех ссылок
+      $(".sort-link").removeClass("asc desc");
+
+      // Добавление класса сортировки к текущей ссылке
+      $(this).addClass(currentSort);
+    });
+
+    $(".search-input").on("input", function () {
+      $.ajax({
+        url: "/search/",
+        type: "GET",
+        data: {
+          sort: $(".sort-link.asc, .sort-link.desc").data("sort"),
+          page: parseInt($("#load-more-button").data("next-page")) - 1,
+          search_full_name: $("input[name='search_full_name']").val(),
+          search_position: $("input[name='search_position']").val(),
+          search_hire_date: $("input[name='search_hire_date']").val(),
+          search_email: $("input[name='search_email']").val(),
+          search_supervisor__full_name: $(
+            "input[name='search_supervisor__full_name']"
+          ).val(),
+        },
+        success: function (response) {
+          // Обновление таблицы с результатами поиска
+          $("tbody").html(response);
+        },
+        error: function (xhr, status, error) {
+          console.error(error);
+        },
+      });
+    });
+  });
+
+  let isLoading = false; // Флаг, чтобы избежать повторных запросов до завершения текущего запроса
+
+  function loadMoreEmployees() {
+    if (!isLoading) {
+      isLoading = true;
+      let nextPage = parseInt($("#load-more-button").data("next-page"));
+      let sortField = $(".sort-link.asc, .sort-link.desc").data("sort");
+      let currentSort = $(".sort-link").hasClass("asc") ? "asc" : "desc";
+      let search_full_name = $("input[name='search_full_name']").val();
+      let search_position = $("input[name='search_position']").val();
+      let search_hire_date = $("input[name='search_hire_date']").val();
+      let search_email = $("input[name='search_email']").val();
+      let search_supervisor__full_name = $(
+        "input[name='search_supervisor__full_name']"
+      ).val();
+
+      $.ajax({
+        url: "/load-more-employees/",
+        type: "GET",
+        data: {
+          page: nextPage,
+          sorted_field: sortField,
+          sort: currentSort,
+          search_full_name: search_full_name,
+          search_position: search_position,
+          search_hire_date: search_hire_date,
+          search_email: search_email,
+          search_supervisor__full_name: search_supervisor__full_name,
+        },
+        success: function (response) {
+          if (response.trim() !== "") {
+            $("tbody").append(response);
+            nextPage++;
+            $("#load-more-button").data("next-page", nextPage);
+            isLoading = false;
+          } else {
+            $("#load-more-button").hide();
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error(error);
+          isLoading = false;
+        },
+      });
+    }
+  }
+
+  $(document).ready(function () {
+    // Установите data-атрибут next-page равным 2, чтобы подгрузить следующую страницу при клике
+    $("#load-more-button").data("next-page", 2);
+
+    // При клике на кнопку "Загрузить еще" вызывайте функцию для подгрузки данных
+    $("#load-more-button").on("click", function () {
+      loadMoreEmployees();
+    });
+  });
+</script>
+{% endblock scripts %}

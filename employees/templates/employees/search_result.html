@@ -1,0 +1,19 @@
+{% for employee in employees %}
+<tr
+  class="{% if employee.position == 'Executor' %}table-primary{% endif %} {% if employee.position == 'Senior Executor' %}table-secondary{% endif %} {% if employee.position == 'Coordinator' %}table-success{% endif %} {% if employee.position == 'Project Manager' %}table-danger{% endif %} {% if employee.position == 'Department Head' %}table-warning{% endif %} {% if employee.position == 'Director' %}table-info{% endif %} {% if employee.position == 'CEO' %}table-light{% endif %}"
+>
+  <td>
+    <a class="text-dark" href="{% url 'employee_detail' employee.id %}"
+      >{{ employee.id }}. {{ employee.full_name }}</a
+    >
+  </td>
+  <td>{{ employee.position }}</td>
+  <td>{{ employee.hire_date }}</td>
+  <td>{{ employee.email }}</td>
+  <td>{{ employee.supervisor.full_name|default:"NONE" }}</td>
+</tr>
+{% empty %}
+<tr>
+  <td colspan="5">No results found.</td>
+</tr>
+{% endfor %}

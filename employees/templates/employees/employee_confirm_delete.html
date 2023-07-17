@@ -1,0 +1,11 @@
+{% extends 'employees/base.html' %} {% block content %}
+<div class="mt-5 col-lg-4 border p-5 bg-opacity-50 rounded">
+  <h3 class="mb-3 text-decoration-underline">Confirm Delete</h3>
+  <p>Are you sure you want to delete employee "{{ employee.full_name }}"?</p>
+  <form method="post" class="mb-3">
+    {% csrf_token %}
+    <input class="btn btn-primary w-100 mt-3" type="submit" value="Delete" />
+  </form>
+  <a href="{% url 'employee_list' %}" class="link-dark text-uppercase fw-bold">Cancel</a>
+</div>
+{% endblock content %}

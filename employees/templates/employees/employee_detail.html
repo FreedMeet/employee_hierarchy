@@ -1,0 +1,23 @@
+{% extends 'employees/base.html' %} {% block content %}
+<div
+  class="mt-5 col-lg-4 border p-5 bg-opacity-50 rounded {% if employee.position == 'Executor' %}bg-primary text-white border-primary{% endif %} 
+                                                        {% if employee.position == 'Senior Executor' %}bg-secondary text-white border-secondary{% endif %}
+                                                        {% if employee.position == 'Coordinator' %}bg-success text-white border-success{% endif %}
+                                                        {% if employee.position == 'Project Manager' %}bg-danger text-white border-danger{% endif %} 
+                                                        {% if employee.position == 'Department Head' %}bg-warning text-dark border-warning{% endif %} 
+                                                        {% if employee.position == 'Director' %}bg-info text-dark border-info{% endif %} 
+                                                        {% if employee.position == 'CEO' %}bg-light text-dark border-light{% endif %}"
+>
+  <h3 class="mb-3 text-decoration-underline">Employee Detail</h3>
+  <p>Full Name: <b>{{ employee.full_name }}</b></p>
+  <p>Position: <b>{{ employee.position }}</b></p>
+  <p>Email: <b>{{ employee.email }}</b></p>
+  <p class="mb-5">Supervisor: <b>{{ employee.supervisor }}</b></p>
+
+  <div class="d-flex justify-content-between">
+    <a href="{% url 'employee_update' employee.id %}" class="link-dark text-uppercase fw-bold">update employee</a>
+    <a href="{% url 'employee_delete' employee.id %}" class="link-dark text-uppercase fw-bold">delete employee</a>
+  </div>
+  
+</div>
+{% endblock content %}

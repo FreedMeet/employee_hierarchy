@@ -1,0 +1,39 @@
+{% extends 'employees/base.html' %} {% block content %}
+<ul class="list-group">
+  {% for employee in employees %} {% if employee.position == 'CEO' %}
+  <li class="list-group-item">
+    <strong>{{ employee.full_name }}</strong> ({{ employee.position }})
+    <br />
+    Email: {{ employee.email }}
+    <br />
+    Hire Date: {{ employee.hire_date }}
+    {% include "employees/employee_tree.html" with employee=employee %}
+  </li>
+  {% endif %} {% endfor %}
+</ul>
+{% endblock content %} {% block scripts %}
+<script>
+  $(document).ready(function () {
+    $(document).on("click", ".load-subordinates", function (e) {
+      e.preventDefault();
+      var employeeId = $(this).data("employee-id");
+      var subordinatesList = $("#subordinates-" + employeeId);
+
+      $.ajax({
+        url: "/load-subordinates/",
+        type: "GET",
+        data: {
+          employee_id: employeeId,
+        },
+        success: function (response) {
+          subordinatesList.html(response);
+          $(".load-subordinates[data-employee-id='" + employeeId + "']").hide();
+        },
+        error: function (xhr, status, error) {
+          console.error(error);
+        },
+      });
+    });
+  });
+</script>
+{% endblock scripts %}

@@ -1,0 +1,31 @@
+<ul class="list-group">
+  {% if employee.subordinates.all %}
+  <ul class="list-group">
+    {% for subordinate in employee.subordinates.all %}
+    <li
+      class="list-group-item {% if subordinate.position == 'Executor' %}list-group-item-primary{% endif %} {% if subordinate.position == 'Senior Executor' %}list-group-item-secondary{% endif %} {% if subordinate.position == 'Coordinator' %}list-group-item-success{% endif %} {% if subordinate.position == 'Project Manager' %}list-group-item-danger{% endif %} {% if subordinate.position == 'Department Head' %}list-group-item-warning{% endif %} {% if subordinate.position == 'Director' %}list-group-item-info{% endif %} {% if subordinate.position == 'CEO' %}list-group-item-light{% endif %}"
+    >
+      <strong>{{ subordinate.full_name }}</strong> ({{ subordinate.position }})
+      <br />
+      Email: {{ subordinate.email }}
+      <br />
+      Hire Date: {{ subordinate.hire_date }}
+      <br />
+      {% if subordinate.subordinates.all %}
+      <button
+        class="btn btn-outline-dark btn-sm load-subordinates mt-2 mb-2"
+        data-employee-id="{{ subordinate.id }}"
+      >
+        Завантажити
+      </button>
+      <ul id="subordinates-{{ subordinate.id }}"></ul>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="list-group-item list-group-item-danger mt-3">
+    Співробітників немає
+  </p>
+  {% endif %}
+</ul>
