@@ -86,6 +86,7 @@ def user_logout(request):
 
 @login_required
 def employee_create(request):
+    employees = Employee.objects.all()
     if request.method == 'POST':
         form = EmployeeForm(request.POST)
         if form.is_valid():
@@ -93,7 +94,7 @@ def employee_create(request):
             return redirect('employee_list')
     else:
         form = EmployeeForm()
-    return render(request, 'employees/employee_form.html', {'form': form})
+    return render(request, 'employees/employee_form.html', {'form': form, 'employees': employees})
 
 
 @login_required
@@ -104,6 +105,7 @@ def employee_detail(request, pk):
 
 @login_required
 def employee_update(request, pk):
+    employees = Employee.objects.all()
     employee = Employee.objects.get(pk=pk)
     if request.method == 'POST':
         form = EmployeeForm(request.POST, instance=employee)
@@ -112,7 +114,7 @@ def employee_update(request, pk):
             return redirect('employee_list')
     else:
         form = EmployeeForm(instance=employee)
-    return render(request, 'employees/employee_form.html', {'form': form})
+    return render(request, 'employees/employee_form.html', {'form': form, 'employees': employees})
 
 
 @login_required

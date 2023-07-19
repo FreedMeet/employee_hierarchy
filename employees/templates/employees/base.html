@@ -42,6 +42,7 @@
                   >List</a
                 >
               </li>
+              {% if user.is_authenticated %}
               <li class="nav-item">
                 <a
                   class="nav-link {% if request.resolver_match.url_name == 'employee_create' %}active{% endif %}"
@@ -49,7 +50,6 @@
                   >Create employee</a
                 >
               </li>
-              {% if user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'logout' %}"
                   >{{user}}, Logout</a

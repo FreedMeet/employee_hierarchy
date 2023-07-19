@@ -7,7 +7,12 @@
   </h3>
   <form method="post">
     {% csrf_token %} {{ form.as_p }}
-    <input class="btn btn-primary w-100 mt-5" type="submit" value="Save" />
+    <datalist id="employees">
+      {% for employee in employees %}
+        <option value="{{ employee.full_name }}"></option>
+      {% endfor %}
+    </datalist>
+    <input class="btn btn-primary w-100 mt-3" type="submit" value="Save" />
   </form>
 </div>
 
